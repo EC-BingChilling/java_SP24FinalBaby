@@ -4,21 +4,21 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        // Example usage for one year (1990)
-        List<Baby> boys1990 = readAndSortBabyNames("names1990.csv");
-        List<Baby> girls1990 = readAndSortBabyNames("names1990.csv");
+        // Process baby names for all 27 years
+        for (int year = 1990; year <= 2017; year++) {
+            String filename = "names" + year + ".csv";
+            List<Baby> boys = readAndSortBabyNames(filename, "M");
+            List<Baby> girls = readAndSortBabyNames(filename, "F");
 
-        // Print baby names for one year
-        System.out.println("Baby Names for 1990 (Boys):");
-        printBabyNames(boys1990);
-        System.out.println("\nBaby Names for 1990 (Girls):");
-        printBabyNames(girls1990);
-
-        // Similar process for all 27 years...
+            System.out.println("Baby Names for " + year + " (Boys):");
+            printBabyNames(boys);
+            System.out.println("\nBaby Names for " + year + " (Girls):");
+            printBabyNames(girls);
+        }
     }
 
-    public static List<Baby> readAndSortBabyNames(String filename) {
-        List<Baby> babyNames = FileHandler.readBabyNames(filename);
+    public static List<Baby> readAndSortBabyNames(String filename, String gender) {
+        List<Baby> babyNames = FileHandler.readBabyNames(filename, gender);
         Collections.sort(babyNames);
         return babyNames;
     }
