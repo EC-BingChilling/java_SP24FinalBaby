@@ -21,6 +21,10 @@ public class Baby implements Comparable<Baby> {
         return count;
     }
 
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     @Override
     public int compareTo(Baby other) {
         return this.name.compareTo(other.name);

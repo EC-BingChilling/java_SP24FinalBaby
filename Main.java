@@ -1,7 +1,6 @@
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,31 +10,51 @@ public class Main {
             Baby[] boys = createAndSortBabyArray(filename, "M");
             Baby[] girls = createAndSortBabyArray(filename, "F");
 
-            // Store baby names in text files
-            storeBabyNamesInTextFile("Boy" + year + ".txt", boys);
-            storeBabyNamesInTextFile("Girl" + year + ".txt", girls);
+            writeBabyArrayToFile(boys, "Boy" + year + ".txt");
+            writeBabyArrayToFile(girls, "Girl" + year + ".txt");
 
-            System.out.println("Baby Names for " + year + " stored in files.");
+            // Update total names map
+            updateTotalNamesMap(boys, totalBoysMap);
+            updateTotalNamesMap(girls, totalGirlsMap);
         }
+
+        // Write total boys and girls to file
+        writeTotalNamesToFile(totalBoysMap, "TotalBoys.txt");
+        writeTotalNamesToFile(totalGirlsMap, "TotalGirls.txt");
     }
+
+    private static Map<String, Integer> totalBoysMap = new HashMap<>();
+    private static Map<String, Integer> totalGirlsMap = new HashMap<>();
 
     public static Baby[] createAndSortBabyArray(String filename, String gender) {
         List<Baby> babyNames = FileHandler.readBabyNames(filename, gender);
-        Baby[] babies = new Baby[1000]; // Assuming there are at most 1000 unique names
-        babyNames.subList(0, Math.min(1000, babyNames.size())).toArray(babies);
-        Arrays.sort(babies);
-        return babies;
+        Collections.sort(babyNames);
+        return babyNames.toArray(new Baby[0]);
     }
 
-    public static void storeBabyNamesInTextFile(String filename, Baby[] babyArray) {
-        try {
-            FileWriter writer = new FileWriter(filename);
+    public static void writeBabyArrayToFile(Baby[] babyArray, String filename) {
+        try (FileWriter writer = new FileWriter(filename)) {
             for (Baby baby : babyArray) {
-                if (baby != null) {
-                    writer.write(baby.toString() + "\n");
-                }
+                writer.write(baby.toString() + "\n");
             }
-            writer.close();
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
+    }
+
+    public static void updateTotalNamesMap(Baby[] babies, Map<String, Integer> totalNamesMap) {
+        for (Baby baby : babies) {
+            String name = baby.getName();
+            int count = baby.getCount();
+            totalNamesMap.put(name, totalNamesMap.getOrDefault(name, 0) + count);
+        }
+    }
+
+    public static void writeTotalNamesToFile(Map<String, Integer> totalNamesMap, String filename) {
+        try (FileWriter writer = new FileWriter(filename)) {
+            for (Map.Entry<String, Integer> entry : totalNamesMap.entrySet()) {
+                writer.write(entry.getKey() + ": " + entry.getValue() + "\n");
+            }
         } catch (IOException e) {
             System.err.println("Error writing to file: " + e.getMessage());
         }
