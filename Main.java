@@ -1,5 +1,6 @@
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -7,25 +8,36 @@ public class Main {
         // Process baby names for all 27 years
         for (int year = 1990; year <= 2017; year++) {
             String filename = "names" + year + ".csv";
-            List<Baby> boys = readAndSortBabyNames(filename, "M");
-            List<Baby> girls = readAndSortBabyNames(filename, "F");
+            Baby[] boys = createAndSortBabyArray(filename, "M");
+            Baby[] girls = createAndSortBabyArray(filename, "F");
 
-            System.out.println("Baby Names for " + year + " (Boys):");
-            printBabyNames(boys);
-            System.out.println("\nBaby Names for " + year + " (Girls):");
-            printBabyNames(girls);
+            // Store baby names in text files
+            storeBabyNamesInTextFile("Boy" + year + ".txt", boys);
+            storeBabyNamesInTextFile("Girl" + year + ".txt", girls);
+
+            System.out.println("Baby Names for " + year + " stored in files.");
         }
     }
 
-    public static List<Baby> readAndSortBabyNames(String filename, String gender) {
+    public static Baby[] createAndSortBabyArray(String filename, String gender) {
         List<Baby> babyNames = FileHandler.readBabyNames(filename, gender);
-        Collections.sort(babyNames);
-        return babyNames;
+        Baby[] babies = new Baby[1000]; // Assuming there are at most 1000 unique names
+        babyNames.subList(0, Math.min(1000, babyNames.size())).toArray(babies);
+        Arrays.sort(babies);
+        return babies;
     }
 
-    public static void printBabyNames(List<Baby> babyNames) {
-        for (Baby baby : babyNames) {
-            System.out.println(baby);
+    public static void storeBabyNamesInTextFile(String filename, Baby[] babyArray) {
+        try {
+            FileWriter writer = new FileWriter(filename);
+            for (Baby baby : babyArray) {
+                if (baby != null) {
+                    writer.write(baby.toString() + "\n");
+                }
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
         }
     }
 }
